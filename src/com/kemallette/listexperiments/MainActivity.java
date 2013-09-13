@@ -1,5 +1,8 @@
 package com.kemallette.listexperiments;
 
+import com.kemallette.listexperiments.refreshinglists.ExpandableListViewActivity;
+import com.kemallette.listexperiments.refreshinglists.ListViewActivity;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;

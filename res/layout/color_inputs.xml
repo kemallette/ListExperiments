@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <RelativeLayout
+        android:id="@+id/groupInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginBottom="15dp"
+        android:visibility="gone" >
+
+        <TextView
+            android:id="@+id/groupTextColorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="Group Text Color" />
+
+        <TextView
+            android:id="@+id/groupBgColorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="25dp"
+            android:text="Group Bg Color" />
+
+        <EditText
+            android:id="@+id/groupTextColorInput"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/groupTextColorLabel"
+            android:hint="Group Text color"
+            android:lines="1" >
+        </EditText>
+
+        <EditText
+            android:id="@+id/groupBackgroundColorInput"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/groupBgColorLabel"
+            android:hint="Group Bg color"
+            android:lines="1" >
+        </EditText>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/itemInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/groupInputLayout"
+        android:layout_marginBottom="15dp" >
+
+        <TextView
+            android:id="@+id/textColorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="Item Text Color" />
+
+        <TextView
+            android:id="@+id/bgColorLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="25dp"
+            android:text="Item Bg Color" />
+
+        <EditText
+            android:id="@+id/textColorInput"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textColorLabel"
+            android:hint="Item Text color"
+            android:lines="1" >
+        </EditText>
+
+        <EditText
+            android:id="@+id/backgroundColorInput"
+            android:layout_width="160dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/bgColorLabel"
+            android:hint="Item Bg color"
+            android:lines="1" >
+        </EditText>
+
+        <View
+            android:id="@+id/div2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/backgroundColorInput"
+            android:color="#999" />
+
+        <Button
+            android:id="@+id/tester"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/div2"
+            android:layout_margin="5dp"
+            android:background="#ffff0000"
+            android:text="Apply"
+            android:textColor="#ffffffff" />
+    </RelativeLayout>
+
+</merge>
