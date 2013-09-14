@@ -39,10 +39,10 @@ public class ExpandableListViewActivity	extends
 	private static final String	TAG				= "ExpandableListViewActivity";
 
 
-	int							groupTextColor	= Color.BLACK;
-	int							childTextColor	= Color.BLACK;
-	int							childBgColor	= Color.WHITE;
-	int							groupBgColor	= Color.WHITE;
+	private int							groupTextColor	= Color.BLACK;
+	private int							childTextColor	= Color.BLACK;
+	private int							childBgColor	= Color.WHITE;
+	private int							groupBgColor	= Color.WHITE;
 
 	private EditText			mChildTextColorInput, mGroupTextColorInput,
 								mChildBackgroundColorInput,
@@ -278,24 +278,7 @@ public class ExpandableListViewActivity	extends
 
 			mData = SeedDataUtil.getAphabetGroupedCities(	ctx,
 															15);
-
-			// for (Character c : mData.keySet()){
-			// Log.i( TAG,
-			// c
-			// + "  \n ============ \n ");
-			//
-			// List<WorldCity> mValues = mData.get(c);
-			// for (WorldCity city : mValues){
-			//
-			// Log.i( TAG,
-			// city.toString());
-			// }
-			// Log.i( TAG,
-			// "\n ============ \n ");
-			//
-			// }
 		}
-
 
 		@Override
 		public View getGroupView(int groupPosition,
@@ -385,19 +368,6 @@ public class ExpandableListViewActivity	extends
 
 		@Override
 		public Object getGroup(int groupPosition){
-
-			// Log.i( TAG,
-			// "groupPosition: "
-			// + groupPosition
-			// + " \n asChar: "
-			// + ((char) ('a'
-			// + groupPosition)));
-			//
-			// Log.i( TAG,
-			// mData.get((char) 'a'
-			// + groupPosition)
-			// .toString());
-
 
 			return (char) ('a'
 			+ groupPosition);
