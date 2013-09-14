@@ -4,9 +4,6 @@
 package com.kemallette.listexperiments.refreshinglists;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
@@ -24,6 +21,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.kemallette.listexperiments.R;
+import com.kemallette.listexperiments.SeedDataUtil;
+import com.kemallette.listexperiments.WorldCity;
 
 /**
  * @author kyle
@@ -60,15 +59,13 @@ public class ListViewActivity	extends
 
 	}
 
-	int							textColor	= Color.BLACK;
-	int							bgColor		= Color.WHITE;
+	int						textColor	= Color.BLACK;
+	int						bgColor		= Color.WHITE;
 
-	private static List<Task>	ITEM_LIST	= new ArrayList<Task>(25);
+	private EditText		mTextColorInput, mBackgroundColorInput;
+	private ListView		mList;
 
-	private EditText			mTextColorInput, mBackgroundColorInput;
-	private ListView			mList;
-
-	private MyArrayAdapter		mAdapter;
+	private MyArrayAdapter	mAdapter;
 
 
 	@Override
@@ -76,9 +73,6 @@ public class ListViewActivity	extends
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.refreshing_listview_layout);
-
-		if (ITEM_LIST.isEmpty())
-			populateItemListData();
 
 		initViews();
 		populateList();
@@ -91,7 +85,7 @@ public class ListViewActivity	extends
 		switch(v.getId()){
 
 			case R.id.tester:
-				setColors();
+				applyColors();
 				break;
 		}
 	}
@@ -119,43 +113,21 @@ public class ListViewActivity	extends
 	}
 
 
-	private void populateItemListData(){
-
-		for (int i = 0; i < 50; i++){
-
-			ITEM_LIST.add(new Task(	i,
-									"List Requirements"));
-			ITEM_LIST.add(new Task(	i,
-									"Select Enviornment, Framework and Tooling"));
-			ITEM_LIST.add(new Task(	i,
-									"Do work"));
-			ITEM_LIST.add(new Task(	i,
-									"Iterate!"));
-			ITEM_LIST.add(new Task(	i,
-									"Maintain"));
-			ITEM_LIST.add(new Task(	i,
-									"Rest"));
-		}
-
-	}
-
-
 	private void populateList(){
 
+		// SeedDataUtil.getCities should be run off the UI thread, but it
+		// doesn't matter for example purposes
 		mAdapter = new MyArrayAdapter(	this,
-										ITEM_LIST);
+										SeedDataUtil.getCities(	this,
+																15));
 		mList.setAdapter(mAdapter);
 	}
 
 
 	/**
-	 * 
-	 * 
-	 * Tip: Color.parseColor is pretty handy. It can take a few simple color
-	 * strings like 'red' or 'blue' as well as the normal #FFFFFFFF format we're
-	 * used to using.
+	 * Take a look at {@link Color#parseColor(String)}. It's quite handy!
 	 */
-	private void setColors(){
+	private void retrieveColors(){
 
 		if (mTextColorInput.getText()
 							.length() > 0)
@@ -167,27 +139,32 @@ public class ListViewActivity	extends
 			bgColor = Color.parseColor(mBackgroundColorInput.getText()
 															.toString()
 															.toLowerCase());
+	}
 
+
+	/**
+	 * First, we collect user inputs from our {@link EditText} widgets and
+	 * convert that to proper integer values using {@link #retrieveColors()}.
+	 * Then, we translate our adapter's visible positions to {@link ViewGroup}
+	 * positions in order to use {@link ViewGroup#getChildAt(int)}. After that,
+	 * we make our color changes which will be reflected immediately.
+	 * 
+	 */
+	private void applyColors(){
 
 		View listItem;
-		Holder mHolder;
+		ViewHolder mHolder;
+
+		retrieveColors();
 
 		int firstVis = mList.getFirstVisiblePosition(); // Returns this item's
 														// adapter position
 		int lastVis = mList.getLastVisiblePosition();// Returns this item's
 														// adapter position
 		int count = lastVis
-					- firstVis; // Need to "convert" our adapter positions to
+					- firstVis; // Converting our adapter
+								// positions to
 								// ViewGroup child positions
-		Log.i(	TAG,
-				"firstVisPos: "
-					+ firstVis
-					+ "     lastVisPos: "
-					+ lastVis
-					+ "\nChildCount: "
-					+ mList.getChildCount()
-					+ "\n mCount: "
-					+ count);
 
 		while (count >= 0){ // looping through visible list items which
 			// are the only items that will need to be
@@ -210,47 +187,41 @@ public class ListViewActivity	extends
 												// screen; usually less than 10.
 
 			if (listItem != null){
-				listItem.setBackgroundColor(bgColor);
 
-				mHolder = (Holder) listItem.getTag();
-				if (mHolder == null){
-					mHolder = new Holder();
-					mHolder.mText = (TextView) listItem.findViewById(android.R.id.text1);
+				mHolder = (ViewHolder) listItem.getTag();
+				if (mHolder == null){ // This shouldn't happen, but we'll make
+										// sure in case some strange concurrency
+										// bugs appear
+					mHolder = new ViewHolder();
+					mHolder.mText = (TextView) listItem
+														.findViewById(android.R.id.text1);
 					listItem.setTag(mHolder);
 				}
 
-				mHolder.mText.setTextColor(textColor);
-
-				Log.i(	TAG,
-						"itemText: "
-							+ mHolder.mText.getText());
-
+				listItem.setBackgroundColor(bgColor); // Setting our user input
+														// background color
+				mHolder.mText.setTextColor(textColor);// Setting our user input
+														// text color
 			}else
 				Log.d(	TAG,
 						"getChildAt retrieved a null view :( ");
-
 
 			count--;
 		}
 
 	}
 
-	static class Holder{
-
-		TextView	mText;
-	}
 
 	class MyArrayAdapter extends
-						ArrayAdapter<Task>{
-
+						ArrayAdapter<WorldCity>{
 
 		public MyArrayAdapter(	Context context,
-								List<Task> objects){
+								WorldCity[] mCities){
 
 			super(	context,
 					android.R.layout.simple_expandable_list_item_1,
 					android.R.id.text1,
-					objects);
+					mCities);
 
 		}
 
@@ -258,22 +229,24 @@ public class ListViewActivity	extends
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent){
 
-			Holder mHolder;
+			ViewHolder mHolder;
 
 			if (convertView == null){
-				convertView =
-								getLayoutInflater().inflate(android.R.layout.simple_list_item_1,
+				convertView = getLayoutInflater().inflate(
+															android.R.layout.simple_list_item_1,
 															parent,
 															false);
-				mHolder = new Holder();
-				mHolder.mText = (TextView) convertView.findViewById(android.R.id.text1);
+				mHolder = new ViewHolder();
+				mHolder.mText = (TextView) convertView
+														.findViewById(android.R.id.text1);
 				convertView.setTag(mHolder);
 			}else
-				mHolder = (Holder) convertView.getTag();
+				mHolder = (ViewHolder) convertView.getTag();
 
-			// Since all visible items have their appropriate user selected
-			// color, we make sure any item views that were in the recycler's
-			// scrapped views reflect our new color choices.
+			// Since all visible items have had their appropriate user selected
+			// colors applied, we need to make sure any of the recycler's
+			// scrapped views (which wouldn't be touched by our visible item
+			// changes) that may get returned also reflect our changes.
 			convertView.setBackgroundColor(bgColor);
 			mHolder.mText.setTextColor(textColor);
 
@@ -281,7 +254,6 @@ public class ListViewActivity	extends
 
 			return convertView;
 		}
-
 
 	}
 
