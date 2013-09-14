@@ -60,7 +60,9 @@ public class ListViewActivity	extends
 
 	}
 
-	int							textColor, bgColor;
+	int							textColor	= Color.BLACK;
+	int							bgColor		= Color.WHITE;
+
 	private static List<Task>	ITEM_LIST	= new ArrayList<Task>(25);
 
 	private EditText			mTextColorInput, mBackgroundColorInput;
@@ -146,33 +148,37 @@ public class ListViewActivity	extends
 	}
 
 
+	/**
+	 * 
+	 * 
+	 * Tip: Color.parseColor is pretty handy. It can take a few simple color
+	 * strings like 'red' or 'blue' as well as the normal #FFFFFFFF format we're
+	 * used to using.
+	 */
 	private void setColors(){
 
 		if (mTextColorInput.getText()
 							.length() > 0)
 			textColor = Color.parseColor(mTextColorInput.getText()
-														.toString());
+														.toString()
+														.toLowerCase());
 		if (mBackgroundColorInput.getText()
 									.length() > 0)
 			bgColor = Color.parseColor(mBackgroundColorInput.getText()
-															.toString());
+															.toString()
+															.toLowerCase());
 
-
-		Log.i(	TAG,
-				"TextColor: "
-					+ textColor
-					+ "\nBgColor: "
-					+ bgColor);
 
 		View listItem;
 		Holder mHolder;
 
-		// These are both implemented in ListView sub classes which means
-		// they're 'raw'/'flat' list positions
-		int firstVis = mList.getFirstVisiblePosition();
-		int lastVis = mList.getLastVisiblePosition();
+		int firstVis = mList.getFirstVisiblePosition(); // Returns this item's
+														// adapter position
+		int lastVis = mList.getLastVisiblePosition();// Returns this item's
+														// adapter position
 		int count = lastVis
-					- firstVis;
+					- firstVis; // Need to "convert" our adapter positions to
+								// ViewGroup child positions
 		Log.i(	TAG,
 				"firstVisPos: "
 					+ firstVis
@@ -189,12 +195,22 @@ public class ListViewActivity	extends
 			// take care of all non-visible items when
 			// the list is scrolled
 
-			listItem = mList.getChildAt(count);
+			listItem = mList.getChildAt(count); // getChildAt(pos) is
+												// implemented in ViewGroup and
+												// as such, position has a
+												// different meaning than your
+												// adapter's positions.
+												// ViewGroup tracks visible
+												// ListView items as children
+												// and is 0 indexed. This means
+												// you'll have 0 - X positions
+												// where X is however many
+												// ListView items it takes to
+												// fill the visible area of your
+												// screen; usually less than 10.
 
 			if (listItem != null){
-
-				if (bgColor > 0)
-					listItem.setBackgroundColor(bgColor);
+				listItem.setBackgroundColor(bgColor);
 
 				mHolder = (Holder) listItem.getTag();
 				if (mHolder == null){
@@ -203,8 +219,11 @@ public class ListViewActivity	extends
 					listItem.setTag(mHolder);
 				}
 
-				if (textColor > 0)
-					mHolder.mText.setTextColor(textColor);
+				mHolder.mText.setTextColor(textColor);
+
+				Log.i(	TAG,
+						"itemText: "
+							+ mHolder.mText.getText());
 
 			}else
 				Log.d(	TAG,
@@ -240,6 +259,7 @@ public class ListViewActivity	extends
 		public View getView(int position, View convertView, ViewGroup parent){
 
 			Holder mHolder;
+
 			if (convertView == null){
 				convertView =
 								getLayoutInflater().inflate(android.R.layout.simple_list_item_1,
@@ -251,17 +271,15 @@ public class ListViewActivity	extends
 			}else
 				mHolder = (Holder) convertView.getTag();
 
-			if (textColor > 0)
-				mHolder.mText.setTextColor(textColor);
+			// Since all visible items have their appropriate user selected
+			// color, we make sure any item views that were in the recycler's
+			// scrapped views reflect our new color choices.
+			convertView.setBackgroundColor(bgColor);
+			mHolder.mText.setTextColor(textColor);
 
-			if (bgColor > 0)
-				convertView.setBackgroundColor(bgColor);
+			mHolder.mText.setText(getItem(position).toString());
 
-			// mHolder.mText.setText(getItem(position).toString());
-
-			return super.getView(	position,
-									convertView,
-									parent);
+			return convertView;
 		}
 
 
